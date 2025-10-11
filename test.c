@@ -16,12 +16,12 @@ int main() {
   public key os public exponent & modulo
   */
 
-  long long p = 3089;
-  long long q = 2011;
-  long long val = 15;
-  long long max = p * q;
-  long long private_exponent;
-  long long public_exponent;
+  unsigned long long p = 3089;
+  unsigned long long q = 2011;
+  unsigned long long val = 15;
+  unsigned long long max = p * q;
+  unsigned long long private_exponent;
+  unsigned long long public_exponent;
   generate_keys(p, q, &max, &public_exponent, &private_exponent);
 
   printf("debug values\nvalue of max, or modulo: %lld\npublic exp:"
