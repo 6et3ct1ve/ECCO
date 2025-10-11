@@ -4,7 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-long long egcd(long long a, long long b, long int *x, long int *y) {
+unsigned long long egcd(unsigned long long a, unsigned long long b, long int *x,
+                        long int *y) {
   /* Expanded gcd
   the full big euclydean algorithm
   it allows you to calculate numbers with hard names
@@ -21,27 +22,28 @@ long long egcd(long long a, long long b, long int *x, long int *y) {
   }
   long int x1;
   long int y1;
-  long long gcd = egcd(b % a, a, &x1, &y1);
+  unsigned long long gcd = egcd(b % a, a, &x1, &y1);
   *x = y1 - (b / a) * x1;
   *y = x1;
   return gcd;
 }
 
-long long gcd(long long a, long long b) {
+unsigned long long gcd(unsigned long long a, unsigned long long b) {
   /* wrapper for egcd to return just the gcd */
 
   long int x = 1, y = 1;
   return egcd(a, b, &x, &y);
 }
 
-long long euler_totient_for_primes(int p, int q) {
+unsigned long long euler_totient_for_primes(int p, int q) {
   /* magic math shit. Calculates lcm(p - 1, q - 1).
   lcm is lowest common multiple*/
-  long long mod = (p - 1) * (q - 1);
+  unsigned long long mod = (p - 1) * (q - 1);
   return mod;
 }
 
-long long generate_exponents(long long fn, long long *d) {
+unsigned long long generate_exponents(unsigned long long fn,
+                                      unsigned long long *d) {
   /* d is for private exponent */
   long int e;
   long int throwaway = 1;
@@ -57,25 +59,29 @@ long long generate_exponents(long long fn, long long *d) {
   return e;
 }
 
-void generate_keys(long long p, long long q, long long *maximum,
-                   long long *public_exponent, long long *private_exponent) {
+void generate_keys(unsigned long long p, unsigned long long q,
+                   unsigned long long *maximum,
+                   unsigned long long *public_exponent,
+                   unsigned long long *private_exponent) {
   *maximum = p * q;
-  long long fn = euler_totient_for_primes(p, q);
+  unsigned long long fn = euler_totient_for_primes(p, q);
   *public_exponent = generate_exponents(fn, private_exponent);
 }
 
-void RSA_encrypt(long long *value, long long maximum, int public_exponent) {
-  long long base_num = *value;
-  long long res = base_num;
+void RSA_encrypt(unsigned long long *value, unsigned long long maximum,
+                 int public_exponent) {
+  unsigned long long base_num = *value;
+  unsigned long long res = base_num;
   for (int i = 1; i < public_exponent; i++) {
     res = (res * base_num) % maximum;
   }
   *value = res;
 }
 
-void RSA_decrypt(long long *value, long long maximum, int private_exponent) {
-  long long base_num = *value;
-  long long res = base_num;
+void RSA_decrypt(unsigned long long *value, unsigned long long maximum,
+                 int private_exponent) {
+  unsigned long long base_num = *value;
+  unsigned long long res = base_num;
   for (int i = 1; i < private_exponent; i++) {
     res = (res * base_num) % maximum;
   }
