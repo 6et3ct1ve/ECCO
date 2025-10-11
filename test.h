@@ -19,7 +19,8 @@ long long egcd(long long a, long long b, long int *x, long int *y) {
     *y = 1;
     return b;
   }
-  long int x1, y1;
+  long int x1;
+  long int y1;
   long long gcd = egcd(b % a, a, &x1, &y1);
   *x = y1 - (b / a) * x1;
   *y = x1;
