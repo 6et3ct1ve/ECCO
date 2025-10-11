@@ -16,9 +16,9 @@ int main() {
   public key os public exponent & modulo
   */
 
-  long long p = 11;
-  long long q = 13;
-  long long val = 88;
+  long long p = 3089;
+  long long q = 2011;
+  long long val = 15;
   long long max = p * q;
   long long private_exponent;
   long long public_exponent;
