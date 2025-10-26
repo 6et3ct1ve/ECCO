@@ -117,8 +117,38 @@ ecco/
 ├── LICENSE
 ├── Makefile
 ├── ecco.1
-└── src/
-    └── (source files)
+├── requirements.txt
+├── include/
+│   └── ecco/
+│       ├── input_service.h
+│       ├── file_buffer.h
+│       ├── output_service.h
+│       ├── ecc_crypto.h
+│       ├── key_generation.h
+│       ├── curve_params.h
+│       ├── aes_wrapper.h
+│       ├── kdf.h
+│       └── ecco.h
+├── src/
+│   ├── main.c
+│   ├── input_service.c
+│   ├── file_buffer.c
+│   ├── output_service.c
+│   ├── ecc_crypto.c
+│   ├── key_generation.c
+│   ├── curve_params.c
+│   ├── aes_wrapper.c
+│   └── kdf.c
+├── lib/
+│   └── tinyargs/
+│       ├── tinyargs.c
+│       └── tinyargs.h
+├── tests/
+│   ├── test_ecc_crypto.c
+│   ├── test_key_generation.c
+│   └── test_file_buffer.c
+└── demo/
+    └── demo_ecco.c
 ```
 
 ## Requirements
