@@ -144,7 +144,7 @@ ecco/
 ├── tests/
 │   ├── test_ecc_crypto.c
 │   ├── test_key_generation.c
-│   └── test_file_buffer.c
+│   └── test_io.c
 └── demo/
     └── demo_ecco.c
 ```
