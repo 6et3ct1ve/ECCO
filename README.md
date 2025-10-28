@@ -127,7 +127,7 @@ ecco/
 │       ├── key_generation.h
 │       ├── curve_params.h
 │       ├── aes_wrapper.h
-│       ├── kdf.h
+│       ├── kdf_wrapper.h
 │       └── ecco.h
 ├── src/
 │   ├── main.c
@@ -138,7 +138,7 @@ ecco/
 │   ├── key_generation.c
 │   ├── curve_params.c
 │   ├── aes_wrapper.c
-│   └── kdf.c
+│   └── kdf_wrapper.c
 ├── lib/
 │   └── tinyargs/
 │       ├── tinyargs.c
