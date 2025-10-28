@@ -118,6 +118,7 @@ ecco/
 ├── Makefile
 ├── ecco.1
 ├── requirements.txt
+├── bin/
 ├── include/
 │   └── ecco/
 │       ├── input_service.h
