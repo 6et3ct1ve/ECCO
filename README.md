@@ -5,7 +5,7 @@ A command-line utility for encrypting and decrypting files using Elliptic Curve 
 ## Team Members
 
 - **Butsko Bohdan**
-- **Mishchyshyn Volodymyr**
+- **Mishchishyn Volodymyr**
 - **Hlazkova Yuliia**
 
 ## About The Project
