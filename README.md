@@ -126,7 +126,7 @@ ecco/
 │       ├── output_service.h
 │       ├── ecc_crypto.h
 │       ├── key_generation.h
-│       ├── curve_params.h
+│       ├── curves.h
 │       ├── aes_wrapper.h
 │       ├── kdf_wrapper.h
 │       └── ecco.h
@@ -137,7 +137,6 @@ ecco/
 │   ├── output_service.c
 │   ├── ecc_crypto.c
 │   ├── key_generation.c
-│   ├── curve_params.c
 │   ├── aes_wrapper.c
 │   └── kdf_wrapper.c
 ├── lib/
