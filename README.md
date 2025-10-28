@@ -122,7 +122,6 @@ ecco/
 ├── include/
 │   └── ecco/
 │       ├── input_service.h
-│       ├── file_buffer.h
 │       ├── output_service.h
 │       ├── ecc_crypto.h
 │       ├── key_generation.h
@@ -133,7 +132,6 @@ ecco/
 ├── src/
 │   ├── main.c
 │   ├── input_service.c
-│   ├── file_buffer.c
 │   ├── output_service.c
 │   ├── ecc_crypto.c
 │   ├── key_generation.c
