@@ -168,5 +168,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Note**: This is a learning project created for educational purposes as part of a cryptography course. For production use, consider using established cryptographic libraries and tools that have undergone extensive security audits.
+**Note**: This is a learning project created for educational purposes as part of a C programming course. For production use, consider using established cryptographic libraries and tools that have undergone extensive security audits.
 ```
