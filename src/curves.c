@@ -1,6 +1,10 @@
 #include <assert.h>
-#include <gmp.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
+#include <gmp.h>
 struct base_point_prototype {
   char *x;
   char *y;
@@ -63,6 +67,35 @@ void _init_mpz_with_str(char *str, mpz_t *mpz) {
   assert(!(mpz_set_str(*mpz, str, 0)));
 }
 
-void curve_populate(struct curve *curve_ptr, char *curve_name) {
+int curve_populate(struct curve *curve_ptr, char *curve_name) {
   // this function is basically a public interface to access curves
+
+  size_t curve_list_size = sizeof(CURVE_LIST) / sizeof(struct curve_prototype);
+
+  for (size_t i = 0; i < curve_list_size; i++) {
+    if (strcmp(curve_name, CURVE_LIST[i].name) == 0) {
+      (*curve_ptr).name = curve_name;
+      _init_mpz_with_str(CURVE_LIST[i].multiplicative_a,
+                         &(*curve_ptr).multiplicative_a);
+      _init_mpz_with_str(CURVE_LIST[i].addendum_b, &(*curve_ptr).addendum_b);
+      _init_mpz_with_str(CURVE_LIST[i].base_point_G.x,
+                         &(*curve_ptr).base_point_G.x);
+      _init_mpz_with_str(CURVE_LIST[i].base_point_G.y,
+                         &(*curve_ptr).base_point_G.y);
+      _init_mpz_with_str(CURVE_LIST[i].modulus_p, &(*curve_ptr).modulus_p);
+      _init_mpz_with_str(CURVE_LIST[i].field_size_n,
+                         &(*curve_ptr).field_size_n);
+      return 1;
+    }
+  }
+  return 0;
+}
+
+void curve_print(struct curve *curve_ptr) {
+  // mpz_out_str(stdout, 10, curve.addendum_b);
+  gmp_printf(
+      "name = %s\na = %Zd\nb = %Zd\nGx = %Zd\nGy = %Zd\np = %Zd\nn = %Zd",
+      curve_ptr->name, curve_ptr->multiplicative_a, curve_ptr->addendum_b,
+      curve_ptr->base_point_G.x, curve_ptr->base_point_G.y,
+      curve_ptr->modulus_p, curve_ptr->field_size_n);
 }
