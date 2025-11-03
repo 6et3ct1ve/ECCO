@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <gmp.h>
 
 struct base_point_prototype {
@@ -54,6 +55,14 @@ struct curve_prototype CURVE_LIST[] = {
      "248b0a77aecec196accc52973"},
 };
 
-void curve_populate(struct curve *cur, char *curve_name) {
+void _init_mpz_with_str(char *str, mpz_t *mpz) {
+  mpz_init(*mpz);
+  // sets the string and tests value. If not 0 - exits
+  // o as a base (third arg) means to use leaing chars (0x, 0b), to define base
+  // of a number
+  assert(!(mpz_set_str(*mpz, str, 0)));
+}
+
+void curve_populate(struct curve *curve_ptr, char *curve_name) {
   // this function is basically a public interface to access curves
 }
