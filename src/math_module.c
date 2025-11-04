@@ -1,5 +1,7 @@
 #include <gmp.h>
 
+mpz_t VARIABLE_GLOBAL_MODULO;
+
 // TODO: redo egcd to use gmp
 unsigned long long egcd(unsigned long long a, unsigned long long b, long int *x,
                         long int *y) {
@@ -25,7 +27,15 @@ unsigned long long egcd(unsigned long long a, unsigned long long b, long int *x,
 }
 
 void find_mmi(mpz_t denominator, mpz_t modulo) {
-  // mmi stands for modular multiplicative inverse. Needed for division
+  // mmi stands for modular multiplicative inverse. Needed for correct division
 }
 
-void modulo() {}
+void set_global_modulo(mpz_t mod) {
+  // small setter for modulo. Should be called at least once before modulo_eval
+  mpz_init_set(VARIABLE_GLOBAL_MODULO, mod);
+}
+
+void modulo_eval(mpz_t num) {
+  // just a wrapper
+  mpz_mod(num, num, VARIABLE_GLOBAL_MODULO);
+}
