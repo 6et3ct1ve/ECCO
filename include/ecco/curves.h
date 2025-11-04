@@ -1,9 +1,9 @@
-#ifndef SMART_CURVES_H
-#define SMART_CURVES_H
+#ifndef CURVES_H
+#define CURVES_H
 
 #include <gmp.h>
 
-struct base_point_G {
+struct point {
   mpz_t x;
   mpz_t y;
 };
@@ -12,7 +12,7 @@ struct curve {
   char *name;
   mpz_t multiplicative_a;
   mpz_t addendum_b;
-  struct base_point_G base_point_G;
+  struct point base_point_G;
   mpz_t modulus_p;
   mpz_t field_size_n;
 };
