@@ -3,6 +3,8 @@
 
 mpz_t VARIABLE_GLOBAL_MODULO;
 
+void _debug_print_mpz(mpz_t num) { gmp_printf("%Zd\n", num); }
+
 unsigned long long egcd_legacy(unsigned long long a, unsigned long long b,
                                long int *x, long int *y) {
   /* extended euclydean algorithm
@@ -96,20 +98,23 @@ void modulo_eval(mpz_t num) {
   mpz_mod(num, num, VARIABLE_GLOBAL_MODULO);
 }
 
-void calculate_slope(struct point point_1, struct point point_2, mpz_t additive,
-                     mpz_t slope) {
+void calculate_slope(struct point *point_1, struct point *point_2,
+                     mpz_t multiplicative, mpz_t slope) {
+  // λ signifies slope
+  // λ = (x2​ − x1​) / (y2 ​− y1​)​ (mod p) for normal addition
+  // λ = (3 * x1^2 + a)/(2 * y1) for doubling​
 
-  if (!mpz_cmp(point_1.x, point_2.y) && !mpz_cmp(point_1.y, point_2.y)) {
+  if (!mpz_cmp(point_1->x, point_2->y) && !mpz_cmp(point_1->y, point_2->y)) {
     // case for doubling
     mpz_t tmp_upper, tmp_lower;
 
-    mpz_init_set(tmp_upper, point_1.x);
+    mpz_init_set(tmp_upper, point_1->x);
     mpz_mul(tmp_upper, tmp_upper, tmp_upper);
     mpz_mul_si(tmp_upper, tmp_upper, 3);
-    mpz_add(tmp_upper, tmp_upper, additive);
+    mpz_add(tmp_upper, tmp_upper, multiplicative);
     modulo_eval(tmp_upper);
 
-    mpz_init_set(tmp_lower, point_1.y);
+    mpz_init_set(tmp_lower, point_1->y);
     mpz_mul_si(tmp_lower, tmp_lower, 2);
     modulo_eval(tmp_lower);
 
@@ -124,11 +129,11 @@ void calculate_slope(struct point point_1, struct point point_2, mpz_t additive,
     // case for normal addition
     mpz_t tmp_upper, tmp_lower;
 
-    mpz_init_set(tmp_upper, point_2.y);
-    mpz_sub(tmp_upper, tmp_upper, point_1.y);
+    mpz_init_set(tmp_upper, point_2->y);
+    mpz_sub(tmp_upper, tmp_upper, point_1->y);
 
-    mpz_init_set(tmp_lower, point_2.x);
-    mpz_sub(tmp_lower, tmp_lower, point_1.x);
+    mpz_init_set(tmp_lower, point_2->x);
+    mpz_sub(tmp_lower, tmp_lower, point_1->x);
 
     find_mmi(tmp_lower);
     mpz_mul(slope, tmp_upper, tmp_lower);
@@ -140,5 +145,23 @@ void calculate_slope(struct point point_1, struct point point_2, mpz_t additive,
   }
 }
 
-void point_addition(struct point sum, struct point point_1,
-                    struct point point_2) {}
+void point_addition(struct point *output_R, struct point *point_P,
+                    struct point *point_Q, struct curve curve) {
+  mpz_t slope, slope_sqr;
+  mpz_init(slope);
+  mpz_init(slope_sqr);
+  calculate_slope(point_P, point_Q, curve.multiplicative_a, slope);
+  mpz_mul(slope_sqr, slope, slope);
+
+  // x3​ = λ^2 − x1 ​− x2​
+  mpz_sub(output_R->x, slope_sqr, point_P->x);
+  mpz_sub(output_R->x, output_R->x, point_Q->x);
+  modulo_eval(output_R->x);
+
+  mpz_sub(output_R->y, point_P->x, output_R->x);
+  mpz_mul(output_R->y, slope, output_R->y);
+  mpz_sub(output_R->y, output_R->y, point_P->y);
+  modulo_eval(output_R->y);
+  mpz_clear(slope);
+  mpz_clear(slope_sqr);
+}
