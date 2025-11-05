@@ -49,7 +49,11 @@ int main() {
 
   curve_print(&c1);
 
-  point_addition(&res_R, &c1.base_point_G, &point_Q, c1);
+  point_addition(&res_R, &c1.base_point_G, &point_Q, &c1);
+
+  gmp_printf("\n\nx: %Zd\ny: %Zd\n", res_R.x, res_R.y);
+
+  point_mult(&res_R, &res_R, c1.multiplicative_a, &c1);
 
   gmp_printf("\n\nx: %Zd\ny: %Zd\n", res_R.x, res_R.y);
 }
