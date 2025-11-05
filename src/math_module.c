@@ -1,5 +1,9 @@
 #include "../include/ecco/ecco.h"
 #include <gmp.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
 mpz_t VARIABLE_GLOBAL_MODULO;
 
@@ -146,14 +150,26 @@ void calculate_slope(struct point *point_1, struct point *point_2,
 }
 
 void point_addition(struct point *output_R, struct point *point_P,
-                    struct point *point_Q, struct curve curve) {
+                    struct point *point_Q, struct curve *curve) {
+
+  // checking if either point P or Q are point at infinity
+  if (!mpz_sgn(point_P->x) && !mpz_sgn(point_P->y)) {
+    mpz_set(output_R->x, point_Q->x);
+    mpz_set(output_R->y, point_Q->y);
+    return;
+  } else if (!mpz_sgn(point_Q->x) && !mpz_sgn(point_Q->y)) {
+    mpz_set(output_R->x, point_P->x);
+    mpz_set(output_R->y, point_P->y);
+    return;
+  }
+
   mpz_t slope, slope_sqr;
   struct point output_tmp;
   mpz_init(slope);
   mpz_init(slope_sqr);
   mpz_init(output_tmp.x);
   mpz_init(output_tmp.y);
-  calculate_slope(point_P, point_Q, curve.multiplicative_a, slope);
+  calculate_slope(point_P, point_Q, curve->multiplicative_a, slope);
   mpz_mul(slope_sqr, slope, slope);
 
   // x3​ = λ^2 − x1 ​− x2​
@@ -173,4 +189,31 @@ void point_addition(struct point *output_R, struct point *point_P,
   mpz_clear(slope_sqr);
   mpz_clear(output_tmp.x);
   mpz_clear(output_tmp.y);
+}
+
+void point_mult(struct point *output, struct point *point, mpz_t scalar,
+                struct curve *curve) {
+  char *scalar_bin = mpz_get_str(NULL, 2, scalar);
+  struct point tmp_output, tmp_exponent;
+  // first time using inits because I found out I need to add NULL
+  mpz_inits(tmp_output.x, tmp_output.y, tmp_exponent.x, tmp_exponent.y, NULL);
+  mpz_set(tmp_exponent.x, point->x);
+  mpz_set(tmp_exponent.y, point->y);
+
+  for (size_t bit = strlen(scalar_bin) - 1; bit >= 0; bit--) {
+    if (scalar_bin[bit] == '1') {
+      point_addition(&tmp_output, &tmp_output, &tmp_exponent, curve);
+    }
+
+    if (!bit) {
+      break;
+    }
+
+    point_addition(&tmp_exponent, &tmp_exponent, &tmp_exponent, curve);
+  }
+
+  mpz_set(output->x, tmp_output.x);
+  mpz_set(output->y, tmp_output.y);
+  mpz_clears(tmp_output.x, tmp_output.y, tmp_exponent.x, tmp_exponent.y, NULL);
+  free(scalar_bin); // I don't really know, do I need to free this string?
 }
