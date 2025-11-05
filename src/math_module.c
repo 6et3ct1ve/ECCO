@@ -78,6 +78,7 @@ void find_mmi(mpz_t denom) {
   mpz_init_set_d(aux, 1);
 
   egcd_mpz(gcd, denom, VARIABLE_GLOBAL_MODULO, mmi, aux);
+  modulo_eval(mmi);
   mpz_set(denom, mmi);
 
   mpz_clear(mmi);
