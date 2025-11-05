@@ -161,6 +161,7 @@ void point_addition(struct point *output_R, struct point *point_P,
   mpz_sub(output_tmp.x, output_tmp.x, point_Q->x);
   modulo_eval(output_tmp.x);
 
+  // y3​ = λ * (x1​ − x3​) − y1​
   mpz_sub(output_tmp.y, point_P->x, output_tmp.x);
   mpz_mul(output_tmp.y, slope, output_tmp.y);
   mpz_sub(output_tmp.y, output_tmp.y, point_P->y);
