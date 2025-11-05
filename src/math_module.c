@@ -1,3 +1,4 @@
+#include "../include/ecco/ecco.h"
 #include <gmp.h>
 
 mpz_t VARIABLE_GLOBAL_MODULO;
@@ -69,8 +70,19 @@ void egcd_mpz(mpz_t gcd, mpz_t a, mpz_t b, mpz_t x, mpz_t y) {
   mpz_set_str(gcd, _egcd_mpz(a, b, x, y), 10);
 }
 
-void find_mmi(mpz_t denominator, mpz_t modulo) {
+void find_mmi(mpz_t denom) {
   // mmi stands for modular multiplicative inverse. Needed for correct division
+  mpz_t mmi, aux, gcd;
+  mpz_init(gcd);
+  mpz_init_set_d(mmi, 1);
+  mpz_init_set_d(aux, 1);
+
+  egcd_mpz(gcd, denom, VARIABLE_GLOBAL_MODULO, mmi, aux);
+  mpz_set(denom, mmi);
+
+  mpz_clear(mmi);
+  mpz_clear(aux);
+  mpz_clear(gcd);
 }
 
 void set_global_modulo(mpz_t mod) {
@@ -82,3 +94,50 @@ void modulo_eval(mpz_t num) {
   // just a wrapper
   mpz_mod(num, num, VARIABLE_GLOBAL_MODULO);
 }
+
+void calculate_slope(struct point point_1, struct point point_2, mpz_t additive,
+                     mpz_t slope) {
+
+  if (!mpz_cmp(point_1.x, point_2.y) && !mpz_cmp(point_1.y, point_2.y)) {
+    // case for doubling
+    mpz_t tmp_upper, tmp_lower;
+
+    mpz_init_set(tmp_upper, point_1.x);
+    mpz_mul(tmp_upper, tmp_upper, tmp_upper);
+    mpz_mul_si(tmp_upper, tmp_upper, 3);
+    mpz_add(tmp_upper, tmp_upper, additive);
+    modulo_eval(tmp_upper);
+
+    mpz_init_set(tmp_lower, point_1.y);
+    mpz_mul_si(tmp_lower, tmp_lower, 2);
+    modulo_eval(tmp_lower);
+
+    find_mmi(tmp_lower);
+    mpz_mul(slope, tmp_upper, tmp_lower);
+    modulo_eval(slope);
+
+    mpz_clear(tmp_lower);
+    mpz_clear(tmp_upper);
+    return;
+  } else {
+    // case for normal addition
+    mpz_t tmp_upper, tmp_lower;
+
+    mpz_init_set(tmp_upper, point_2.y);
+    mpz_sub(tmp_upper, tmp_upper, point_1.y);
+
+    mpz_init_set(tmp_lower, point_2.x);
+    mpz_sub(tmp_lower, tmp_lower, point_1.x);
+
+    find_mmi(tmp_lower);
+    mpz_mul(slope, tmp_upper, tmp_lower);
+    modulo_eval(slope);
+
+    mpz_clear(tmp_lower);
+    mpz_clear(tmp_upper);
+    return;
+  }
+}
+
+void point_addition(struct point sum, struct point point_1,
+                    struct point point_2) {}
