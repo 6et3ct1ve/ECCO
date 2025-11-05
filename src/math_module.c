@@ -148,20 +148,28 @@ void calculate_slope(struct point *point_1, struct point *point_2,
 void point_addition(struct point *output_R, struct point *point_P,
                     struct point *point_Q, struct curve curve) {
   mpz_t slope, slope_sqr;
+  struct point output_tmp;
   mpz_init(slope);
   mpz_init(slope_sqr);
+  mpz_init(output_tmp.x);
+  mpz_init(output_tmp.y);
   calculate_slope(point_P, point_Q, curve.multiplicative_a, slope);
   mpz_mul(slope_sqr, slope, slope);
 
   // x3​ = λ^2 − x1 ​− x2​
-  mpz_sub(output_R->x, slope_sqr, point_P->x);
-  mpz_sub(output_R->x, output_R->x, point_Q->x);
-  modulo_eval(output_R->x);
+  mpz_sub(output_tmp.x, slope_sqr, point_P->x);
+  mpz_sub(output_tmp.x, output_tmp.x, point_Q->x);
+  modulo_eval(output_tmp.x);
 
-  mpz_sub(output_R->y, point_P->x, output_R->x);
-  mpz_mul(output_R->y, slope, output_R->y);
-  mpz_sub(output_R->y, output_R->y, point_P->y);
-  modulo_eval(output_R->y);
+  mpz_sub(output_tmp.y, point_P->x, output_tmp.x);
+  mpz_mul(output_tmp.y, slope, output_tmp.y);
+  mpz_sub(output_tmp.y, output_tmp.y, point_P->y);
+  modulo_eval(output_tmp.y);
+
+  mpz_set(output_R->x, output_tmp.x);
+  mpz_set(output_R->y, output_tmp.y);
   mpz_clear(slope);
   mpz_clear(slope_sqr);
+  mpz_clear(output_tmp.x);
+  mpz_clear(output_tmp.y);
 }
