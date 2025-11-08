@@ -1,4 +1,5 @@
-#include "ecco/kdf_wrapper.h"
+#include "../include/ecco/kdf_wrapper.h"
+// .. means go up a directory
 #include <openssl/evp.h>
 #include <openssl/kdf.h>
 #include <stdlib.h>
