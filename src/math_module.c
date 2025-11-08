@@ -108,7 +108,7 @@ void calculate_slope(struct point *point_1, struct point *point_2,
   // λ = (x2​ − x1​) / (y2 ​− y1​)​ (mod p) for normal addition
   // λ = (3 * x1^2 + a)/(2 * y1) for doubling​
 
-  if (!mpz_cmp(point_1->x, point_2->y) && !mpz_cmp(point_1->y, point_2->y)) {
+  if (!mpz_cmp(point_1->x, point_2->x) && !mpz_cmp(point_1->y, point_2->y)) {
     // case for doubling
     mpz_t tmp_upper, tmp_lower;
 
@@ -161,6 +161,10 @@ void point_addition(struct point *output_R, struct point *point_P,
     mpz_set(output_R->x, point_P->x);
     mpz_set(output_R->y, point_P->y);
     return;
+  } else if (!mpz_sgn(point_P->y) && !mpz_sgn(point_Q->y)) {
+    // if both Y's are zero then set output as point at infinity
+    mpz_set_d(output_R->x, 0);
+    mpz_set_d(output_R->y, 0);
   }
 
   mpz_t slope, slope_sqr;
