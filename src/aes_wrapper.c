@@ -1,4 +1,4 @@
-#include "ecco/aes_wrapper.h"
+#include "../include/ecco/aes_wrapper.h"
 #include <openssl/evp.h>
 #include <openssl/rand.h>
 #include <stdlib.h>
@@ -37,7 +37,6 @@ static int parse_key32_from_hex(const char *key_hex, unsigned char key[32]) {
     return from_hex_n(key_hex, key, 32);
 }
 
-/* AES-256-GCM encrypt */
 char *aes_encrypt_gcm_hex(const unsigned char *plaintext, size_t pt_len,
                           const char *key_hex) {
     unsigned char key[32];
@@ -80,7 +79,6 @@ char *aes_encrypt_gcm_hex(const unsigned char *plaintext, size_t pt_len,
     return out;
 }
 
-/* AES-256-GCM decrypt */
 unsigned char *aes_decrypt_gcm_hex(const char *pkg, const char *key_hex, size_t *out_len) {
     unsigned char key[32];
     if (!pkg || !parse_key32_from_hex(key_hex, key)) return NULL;

@@ -1,5 +1,4 @@
 #include "../include/ecco/kdf_wrapper.h"
-// .. means go up a directory
 #include <openssl/evp.h>
 #include <openssl/kdf.h>
 #include <stdlib.h>
@@ -13,9 +12,6 @@ static void to_hex(const unsigned char *in, size_t len, char *out) {
     }
 }
 
-/*
-    Simple HKDF-SHA256 wrapper.
-*/
 char *kdf_hex(const void *data, size_t data_len,
               const unsigned char *salt, size_t salt_len,
               size_t out_hex_chars) {
@@ -50,19 +46,20 @@ char *kdf_hex(const void *data, size_t data_len,
     return hex;
 }
 
-/*
-    Wrapper for mpz_t value.
-*/
 char *kdf_hex_from_mpz(const mpz_t val,
                        const unsigned char *salt, size_t salt_len,
                        size_t out_hex_chars) {
-    size_t count = 0;
-    unsigned char *buf = (unsigned char*)mpz_export(NULL, &count, 1, 1, 1, 0, val);
+
+    char *buf = mpz_get_str(NULL, 16, val);
+
     if (!buf) {
-        buf = calloc(1, 1);
-        count = 1;
+        fprintf(stderr, "mpz_get_str failed\n");
+        return NULL;
     }
-    char *hex = kdf_hex(buf, count, salt, salt_len, out_hex_chars);
+    size_t data_len = strlen(buf);
+
+    char *hex = kdf_hex(buf, data_len, salt, salt_len, out_hex_chars);
+
     free(buf);
     return hex;
 }
