@@ -6,6 +6,29 @@
 
 #include <gmp.h>
 
+int test_multiplication(struct point *initial_point, struct curve *curve) {
+  struct point tmp_mult, tmp_add;
+  mpz_t tmp_scalar;
+  mpz_inits(tmp_mult.x, tmp_add.x, tmp_mult.y, tmp_add.y, tmp_scalar, NULL);
+  point_addition(&tmp_add, initial_point, &tmp_add, curve);
+
+  gmp_printf("------------------start add/mult testing------------------\n"
+    "initial point: (%Zd, %Zd)\nadd initial point: (%Zd, %Zd)\n\n", initial_point->x,
+  initial_point->y, tmp_add.x, tmp_add.y);
+
+  for(size_t i = 2; i <= 20; i++) {
+    mpz_set_si(tmp_scalar, i);
+
+    point_mult(&tmp_mult, initial_point, tmp_scalar, curve);
+    point_addition(&tmp_add, initial_point, &tmp_add, curve);
+
+    gmp_printf("res for P%d\nmult: (%Zd, %Zd)\nadd: (%Zd, %Zd)\npassed: %s\n\n",
+    i, tmp_mult.x, tmp_mult.y, tmp_add.x, tmp_add.y, 
+    (mpz_cmp(tmp_mult.x, tmp_add.x) == 0 && mpz_cmp(tmp_mult.y, tmp_add.y) == 0) ? "true" : "false");
+  }
+  mpz_clears(tmp_mult.x, tmp_add.x, tmp_mult.y, tmp_add.y, tmp_scalar, NULL);
+}
+
 int main() {
   srand(time(NULL));
   unsigned long long a, b, gcd;
@@ -34,12 +57,12 @@ int main() {
   mpz_init_set_d(c1.addendum_b, 3);
   mpz_init_set_d(c1.base_point_G.x, 3);
   mpz_init_set_d(c1.base_point_G.y, 6);
-  mpz_init_set_d(c1.modulus_p, 127);
-  mpz_init_set_d(c1.field_size_n, 106);
+  mpz_init_set_d(c1.modulus_p, 97);
+  mpz_init_set_d(c1.field_size_n, 100);
 
   struct point point_Q;
-  mpz_init_set_d(point_Q.x, 31);
-  mpz_init_set_d(point_Q.y, 30);
+  mpz_init_set_d(point_Q.x, 28);
+  mpz_init_set_d(point_Q.y, 63);
 
   struct point res_R;
   mpz_init(res_R.x);
@@ -53,7 +76,5 @@ int main() {
 
   gmp_printf("\n\nx: %Zd\ny: %Zd\n", res_R.x, res_R.y);
 
-  point_mult(&res_R, &res_R, c1.multiplicative_a, &c1);
-
-  gmp_printf("\n\nx: %Zd\ny: %Zd\n", res_R.x, res_R.y);
+  test_multiplication(&point_Q, &c1);
 }
