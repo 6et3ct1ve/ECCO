@@ -12,5 +12,8 @@ void find_mmi(mpz_t denominator);
 void set_global_modulo(mpz_t mod);
 void modulo_eval(mpz_t num);
 void point_addition(struct point *output_R, struct point *point_P,
-                    struct point *point_Q, struct curve curve);
+                    struct point *point_Q, struct curve *curve);
+void point_mult(struct point *output, struct point *point, mpz_t scalar,
+                struct curve *curve);
+
 #endif

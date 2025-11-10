@@ -1,5 +1,9 @@
 #include "../include/ecco/ecco.h"
 #include <gmp.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
 mpz_t VARIABLE_GLOBAL_MODULO;
 
@@ -98,19 +102,35 @@ void modulo_eval(mpz_t num) {
   mpz_mod(num, num, VARIABLE_GLOBAL_MODULO);
 }
 
+int are_points_equal(struct point *point_1, struct point *point_2) {
+  if (!mpz_cmp(point_1->x, point_2->x) && !mpz_cmp(point_1->y, point_2->y)) {
+    return 1;
+  }
+  return 0;
+}
+
+int is_point_at_infinity(struct point *point) {
+  if (!mpz_sgn(point->x) && !mpz_sgn(point->y)) {
+    return 1;
+  }
+  return 0;
+}
+
 void calculate_slope(struct point *point_1, struct point *point_2,
                      mpz_t multiplicative, mpz_t slope) {
   // λ signifies slope
   // λ = (x2​ − x1​) / (y2 ​− y1​)​ (mod p) for normal addition
   // λ = (3 * x1^2 + a)/(2 * y1) for doubling​
 
-  if (!mpz_cmp(point_1->x, point_2->y) && !mpz_cmp(point_1->y, point_2->y)) {
+  if (are_points_equal(point_1, point_2)) {
     // case for doubling
     mpz_t tmp_upper, tmp_lower;
 
     mpz_init_set(tmp_upper, point_1->x);
     mpz_mul(tmp_upper, tmp_upper, tmp_upper);
+    modulo_eval(tmp_upper);
     mpz_mul_si(tmp_upper, tmp_upper, 3);
+    modulo_eval(tmp_upper);
     mpz_add(tmp_upper, tmp_upper, multiplicative);
     modulo_eval(tmp_upper);
 
@@ -131,9 +151,11 @@ void calculate_slope(struct point *point_1, struct point *point_2,
 
     mpz_init_set(tmp_upper, point_2->y);
     mpz_sub(tmp_upper, tmp_upper, point_1->y);
+    modulo_eval(tmp_upper);
 
     mpz_init_set(tmp_lower, point_2->x);
     mpz_sub(tmp_lower, tmp_lower, point_1->x);
+    modulo_eval(tmp_lower);
 
     find_mmi(tmp_lower);
     mpz_mul(slope, tmp_upper, tmp_lower);
@@ -145,24 +167,67 @@ void calculate_slope(struct point *point_1, struct point *point_2,
   }
 }
 
+int is_vertical_slope(struct point *point_1, struct point *point_2) {
+  // if x1 = x2 but y1 = -y2 slope is vertical, so it points at infinity
+  if (mpz_cmp(point_1->x, point_2->x)) {
+    return 0;
+  } else if (are_points_equal(point_1, point_2)) {
+    if (mpz_sgn(point_1->y) == 0) {
+      // if its doubling at y = 0 point the slope is vertical aswell
+      return 1;
+    }
+    return 0;
+  }
+
+  mpz_t tmp_y;
+  mpz_init(tmp_y);
+  mpz_add(tmp_y, point_1->y, point_2->y);
+  modulo_eval(tmp_y);
+
+  if(!mpz_sgn(tmp_y)) {return 1;}
+  return 0;
+}
+
 void point_addition(struct point *output_R, struct point *point_P,
-                    struct point *point_Q, struct curve curve) {
+                    struct point *point_Q, struct curve *curve) {
+
+  // checking if either point P or Q are point at infinity
+  if (is_point_at_infinity(point_P)) {
+    mpz_set(output_R->x, point_Q->x);
+    mpz_set(output_R->y, point_Q->y);
+    return;
+  } else if (is_point_at_infinity(point_Q)) {
+    mpz_set(output_R->x, point_P->x);
+    mpz_set(output_R->y, point_P->y);
+    return;
+    return;
+  } else if (is_vertical_slope(point_P, point_Q)) {
+    mpz_set_d(output_R->x, 0);
+    mpz_set_d(output_R->y, 0);
+    return;
+  }
+
   mpz_t slope, slope_sqr;
   struct point output_tmp;
   mpz_init(slope);
   mpz_init(slope_sqr);
   mpz_init(output_tmp.x);
   mpz_init(output_tmp.y);
-  calculate_slope(point_P, point_Q, curve.multiplicative_a, slope);
+  calculate_slope(point_P, point_Q, curve->multiplicative_a, slope);
   mpz_mul(slope_sqr, slope, slope);
+  modulo_eval(slope_sqr);
 
   // x3​ = λ^2 − x1 ​− x2​
   mpz_sub(output_tmp.x, slope_sqr, point_P->x);
+  modulo_eval(output_tmp.x);
   mpz_sub(output_tmp.x, output_tmp.x, point_Q->x);
   modulo_eval(output_tmp.x);
 
+  // y3​ = λ * (x1​ − x3​) − y1​
   mpz_sub(output_tmp.y, point_P->x, output_tmp.x);
+  modulo_eval(output_tmp.y);
   mpz_mul(output_tmp.y, slope, output_tmp.y);
+  modulo_eval(output_tmp.y);
   mpz_sub(output_tmp.y, output_tmp.y, point_P->y);
   modulo_eval(output_tmp.y);
 
@@ -172,4 +237,30 @@ void point_addition(struct point *output_R, struct point *point_P,
   mpz_clear(slope_sqr);
   mpz_clear(output_tmp.x);
   mpz_clear(output_tmp.y);
+}
+
+void point_mult(struct point *output, struct point *point, mpz_t scalar,
+                struct curve *curve) {
+  char *scalar_bin = mpz_get_str(NULL, 2, scalar);
+  struct point tmp_output, tmp_exponent;
+  // first time using inits because I found out I need to add NULL
+  mpz_inits(tmp_output.x, tmp_output.y, tmp_exponent.x, tmp_exponent.y, NULL);
+  mpz_set(tmp_exponent.x, point->x);
+  mpz_set(tmp_exponent.y, point->y);
+
+  for (size_t bit = strlen(scalar_bin); bit-- > 0;) {
+    if (scalar_bin[bit] == '1') {
+      point_addition(&tmp_output, &tmp_output, &tmp_exponent, curve);
+    }
+
+    if (bit > 0) {
+      point_addition(&tmp_exponent, &tmp_exponent, &tmp_exponent, curve);
+    }
+
+  }
+
+  mpz_set(output->x, tmp_output.x);
+  mpz_set(output->y, tmp_output.y);
+  mpz_clears(tmp_output.x, tmp_output.y, tmp_exponent.x, tmp_exponent.y, NULL);
+  free(scalar_bin); // I don't really know, do I need to free this string?
 }
