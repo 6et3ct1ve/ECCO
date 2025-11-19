@@ -4,14 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void to_hex(const unsigned char *in, size_t len, char *out) {
-  static const char *hex = "0123456789abcdef";
-  for (size_t i = 0; i < len; i++) {
-    out[2 * i] = hex[(in[i] >> 4) & 0xF];
-    out[2 * i + 1] = hex[in[i] & 0xF];
-  }
-}
-
 char *kdf_hex(const void *data, size_t data_len, const unsigned char *salt,
               size_t salt_len, size_t out_hex_chars) {
   if (out_hex_chars == 0 || (out_hex_chars % 2) != 0)
@@ -51,8 +43,14 @@ char *kdf_hex(const void *data, size_t data_len, const unsigned char *salt,
     return NULL;
   }
 
-  to_hex(okm, out_bytes, hex);
+  static const char *digits = "0123456789abcdef";
+  for (size_t i = 0; i < out_bytes; i++) {
+    hex[2 * i] = digits[(okm[i] >> 4) & 0xF];
+    hex[2 * i + 1] = digits[okm[i] & 0xF];
+  }
+
   hex[out_hex_chars] = '\0';
+
   free(okm);
   return hex;
 }
