@@ -21,7 +21,7 @@ struct arguments {
 
 void get_arguments(struct arguments* args, int argc, char** argv);
 
-int read_keyfile(char* filename, struct keyring* keyring);
+int read_keyfile(char* filename, struct keyring* keyring, struct curve* curve);
 
 int read_uncrypted_msg(char* filename, unsigned char* buff);
 

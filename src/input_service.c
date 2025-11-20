@@ -1,10 +1,14 @@
-#include "../include/ecco/ecco.h"
-#include "../include/tinyargs/tinyargs.h"
+#include <stddef.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
+#include <gmp.h>
+#include "../include/ecco/ecco.h"
+#include "../include/tinyargs/tinyargs.h"
+
+size_t KEY_BUFF_SIZE = 2047; // may be an excesive ammount but better safe then sorry
 
 void test_file_read(char* filename) {
     if (!access(filename, F_OK) && !access(filename, R_OK)) {
@@ -121,4 +125,45 @@ void get_arguments(struct arguments* args, int argc, char** argv) {
 void print_arguments(struct arguments* args) {
     printf("action: %d\nsource_file: %s\nresult_file: %s\ncurve: %s\npub_key_file: %s\npriv_key_file: %s\n",
         args->action, args->source_file, args->result_file, args->curve, args->pub_key_file, args->priv_key_file);
+}
+
+int read_keyfile(char* filename, struct keyring* keyring, struct curve* curve) {
+    FILE* fp;
+    char* curve_name = calloc(32, 1);
+
+    
+    if ((fp = fopen(filename, "r")) != NULL) {
+        if (keyring->is_private) {
+            if (gmp_fscanf(fp, "-----BEGIN-PRIVATE-KEY-----\n%s\n%Zd\n------END-PRIVATE-KEY------", curve_name, keyring->key_priv)) {
+                if (curve_populate(curve, curve_name)) {
+                    fclose(fp);
+
+                    set_global_modulo(curve->modulus_p);
+                    keyring->curve = curve;
+
+                    point_mult(&(keyring->key_pub), &(keyring->curve->base_point_G), 
+                        keyring->key_priv, keyring->curve);
+                    
+                    return 1;
+                }
+            }
+        } else if (!keyring->is_private) {
+            if (gmp_fscanf(fp, "-----BEGIN-PUBLIC-KEY-----\n%s\n%Zd\n%Zd\n------END-PUBLIC-KEY------", curve_name, keyring->key_pub.x, keyring->key_pub.y)) {
+                if (curve_populate(curve, curve_name)) {
+                    fclose(fp);
+
+                    set_global_modulo(curve->modulus_p);
+                    keyring->curve = curve;
+
+                    set_global_modulo(keyring->curve->modulus_p);
+            
+                    return 1;
+                }
+            }
+        }
+        fclose(fp);
+        return 0;
+    } else {
+        return 0;
+    }
 }
