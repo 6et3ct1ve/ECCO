@@ -76,6 +76,11 @@ void egcd_mpz(mpz_t gcd, mpz_t a, mpz_t b, mpz_t x, mpz_t y) {
   mpz_set_str(gcd, _egcd_mpz(a, b, x, y), 10);
 }
 
+void modulo_eval(mpz_t num) {
+  // just a wrapper
+  mpz_mod(num, num, VARIABLE_GLOBAL_MODULO);
+}
+
 void find_mmi(mpz_t denom) {
   // mmi stands for modular multiplicative inverse. Needed for correct division
   mpz_t mmi, aux, gcd;
@@ -95,11 +100,6 @@ void find_mmi(mpz_t denom) {
 void set_global_modulo(mpz_t mod) {
   // small setter for modulo. Should be called at least once before modulo_eval
   mpz_init_set(VARIABLE_GLOBAL_MODULO, mod);
-}
-
-void modulo_eval(mpz_t num) {
-  // just a wrapper
-  mpz_mod(num, num, VARIABLE_GLOBAL_MODULO);
 }
 
 int are_points_equal(struct point *point_1, struct point *point_2) {
