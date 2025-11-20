@@ -6,7 +6,7 @@
 
 struct keyring {
     int is_private;
-    struct curve curve;
+    struct curve* curve;
 
     mpz_t key_priv;
     struct point key_pub;
@@ -23,5 +23,9 @@ void set_keyring_public(struct keyring* keyring);
 void init_keyring(struct keyring* keyring);
 
 void generate_keyring(struct curve* curve, struct keyring* keyring);
+
+int compute_shsecret(struct keyring* keyring);
+
+void print_keyring(struct keyring* keyring);
 
 #endif
