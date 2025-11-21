@@ -1,26 +1,43 @@
-#include "../include/ecco/output_service.h"
 #include <stdio.h>
 #include <string.h>
 
-static int write_core(const char *path, const void *buf, size_t len,
-                      int append) {
-  if (!path || !buf)
-    return -1;
-  FILE *f = fopen(path, append ? "ab" : "wb");
-  if (!f)
-    return -2;
-  size_t w = fwrite(buf, 1, len, f);
-  fclose(f);
-  return (w == len) ? 0 : -3;
+#include <gmp.h>
+#include "../include/ecco/output_service.h"
+
+int write_decrypted_msg(FILE* fp, unsigned char* msg, size_t msg_len){
+  if (fwrite(msg, sizeof(char), msg_len, fp) > 0) {
+    return 1;
+  }
+  return 0;
 }
 
-int write_string_to_file(const char *path, const char *s, int append) {
-  if (!s)
-    return -1;
-  return write_core(path, s, strlen(s), append);
+int write_encrypted_msg(FILE* fp, unsigned char* msg, size_t msg_len, char* curve_name, struct point* eph_pub_key) {
+  char* eph_x = mpz_get_str(NULL, 10, eph_pub_key->x);
+  char* eph_y = mpz_get_str(NULL, 10, eph_pub_key->y);
+  if (ftell(fp) == 0) {
+    if (gmp_fprintf(fp, "----BEGIN-EPHEMERAL-KEY----\n%s\n%Zd\n%Zd\n-------BEGIN-MESSAGE-------\n%s", curve_name, eph_pub_key->x, eph_pub_key->y, msg)) {
+      return 1;
+    }
+    return 0;
+  }
+  else {
+    if (fwrite(msg, sizeof(char), msg_len, fp) > 0) {
+      return 1;
+    }
+    return 0;
+  }
 }
 
-int write_buffer_to_file(const char *path, const void *buf, size_t len,
-                         int append) {
-  return write_core(path, buf, len, append);
+int write_key(FILE* fp, struct keyring* keyring) {
+  if (keyring->is_private) {
+    if (gmp_fprintf(fp, "-----BEGIN-PRIVATE-KEY-----\n%s\n%Zd\n------END-PRIVATE-KEY------", keyring->curve->name, keyring->key_priv)) {
+      return 1;
+    }
+    return 0;
+  } else {
+    if (gmp_fprintf(fp, "-----BEGIN-PUBLIC-KEY-----\n%s\n%Zd\n%Zd\n------END-PUBLIC-KEY------", keyring->curve->name, keyring->key_pub.x, keyring->key_pub.y)) {
+      return 1;
+    }
+    return 0;
+  }
 }
