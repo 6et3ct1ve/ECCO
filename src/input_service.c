@@ -8,8 +8,6 @@
 #include "../include/ecco/ecco.h"
 #include "../include/tinyargs/tinyargs.h"
 
-size_t KEY_BUFF_SIZE = 2047; // may be an excesive ammount but better safe then sorry
-
 void test_file_read(char* filename) {
     if (!access(filename, F_OK) && !access(filename, R_OK)) {
         return;
@@ -166,4 +164,21 @@ int read_keyfile(char* filename, struct keyring* keyring, struct curve* curve) {
     } else {
         return 0;
     }
+}
+
+int read_encmsg_head(FILE* fp, struct keyring* keyring, struct curve* curve) {
+    char* curve_name = calloc(32, 1);
+
+    if (gmp_fscanf(fp, "----BEGIN-EPHEMERAL-KEY----\n%s\n%Zd\n%Zd\n-------BEGIN-MESSAGE-------\n", curve_name, keyring->key_pub_eph.x, keyring->key_pub_eph.y)) {
+        if (curve_populate(curve, curve_name)) {
+            set_global_modulo(curve->modulus_p);
+            keyring->curve = curve;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int read_encmsg_body(FILE* fp, unsigned char* buff, size_t buff_len) {
+    return fread(buff, sizeof(unsigned char), buff_len, fp);
 }
