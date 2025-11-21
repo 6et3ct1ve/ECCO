@@ -24,8 +24,8 @@ struct arguments {
 void get_arguments(struct arguments* args, int argc, char** argv);
 // returns 0 if something bad occurs
 int read_keyfile(char* filename, struct keyring* keyring, struct curve* curve);
-
-int read_uncrypted_msg(char* filename, unsigned char* buff);
+// returns the ammount of read data
+int read_uncrypt_msg(FILE* fp, unsigned char* buff, size_t buff_len);
 // returns 0 if something bad occurs
 int read_encmsg_head(FILE* fp, struct keyring* keyring, struct curve* curve);
 // returns the ammount of read data

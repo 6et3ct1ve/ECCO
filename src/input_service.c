@@ -182,3 +182,7 @@ int read_encmsg_head(FILE* fp, struct keyring* keyring, struct curve* curve) {
 int read_encmsg_body(FILE* fp, unsigned char* buff, size_t buff_len) {
     return fread(buff, sizeof(unsigned char), buff_len, fp);
 }
+
+int read_uncrypt_msg(FILE* fp, unsigned char* buff, size_t buff_len) {
+    return fread(buff, sizeof(unsigned char), buff_len, fp);
+}
