@@ -53,11 +53,9 @@ void generate_keyring(struct curve* curve, struct keyring* result_keyring) {
 int compute_shsecret(struct keyring* keyring) {
     if (keyring->is_private) {
         point_mult(&(keyring->shared_secret), &(keyring->key_pub_eph), keyring->key_priv, keyring->curve);
-        gmp_printf("shsecret private: (%Zd, %Zd)\n\n", keyring->shared_secret.x, keyring->shared_secret.y);
         return 1;
     } else if (!keyring->is_private) {
         point_mult(&(keyring->shared_secret), &(keyring->key_pub), keyring->key_priv_eph, keyring->curve);
-        gmp_printf("shsecret public: (%Zd, %Zd)\n\n", keyring->shared_secret.x, keyring->shared_secret.y);
         return 1;
     }
     return 0;
