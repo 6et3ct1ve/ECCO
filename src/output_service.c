@@ -15,13 +15,13 @@ int write_encrypted_msg(FILE* fp, unsigned char* msg, size_t msg_len, char* curv
   char* eph_x = mpz_get_str(NULL, 10, eph_pub_key->x);
   char* eph_y = mpz_get_str(NULL, 10, eph_pub_key->y);
   if (ftell(fp) == 0) {
-    if (gmp_fprintf(fp, "----BEGIN-EPHEMERAL-KEY----\n%s\n%Zd\n%Zd\n-------BEGIN-MESSAGE-------\n%s", curve_name, eph_pub_key->x, eph_pub_key->y, msg)) {
+    if (gmp_fprintf(fp, "----BEGIN-EPHEMERAL-KEY----\n%s\n%Zd\n%Zd\n-------BEGIN-MESSAGE-------\n%s\n", curve_name, eph_pub_key->x, eph_pub_key->y, msg)) {
       return 1;
     }
     return 0;
   }
   else {
-    if (fwrite(msg, sizeof(char), msg_len, fp) > 0) {
+    if (gmp_fprintf(fp, "%s\n", msg)) {
       return 1;
     }
     return 0;

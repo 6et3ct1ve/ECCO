@@ -180,7 +180,15 @@ int read_encmsg_head(FILE* fp, struct keyring* keyring, struct curve* curve) {
 }
 
 int read_encmsg_body(FILE* fp, unsigned char* buff, size_t buff_len) {
-    return fread(buff, sizeof(unsigned char), buff_len, fp);
+    int matched = fscanf(fp, "%s", buff);  // Remove \n - fscanf skips whitespace automatically
+    
+    if (matched == 1) {
+        return strlen((char*)buff); 
+    } else if (matched == EOF) {
+        return 0;  // No more data
+    } else {
+        return -1;  // Error
+    }
 }
 
 int read_uncrypt_msg(FILE* fp, unsigned char* buff, size_t buff_len) {
