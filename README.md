@@ -23,6 +23,18 @@ ECCO is a lightweight, secure file encryption utility that leverages the power o
 
 ## Installation
 
+### Note
+
+For now it's not done yet, so for actual tests folow this note:
+
+```bash
+git clone https://github.com/6et3ct1ve/ecco.git
+cd ecco
+gcc src/* include/tinyargs/*.c -O2 -march=x86-64 -fomit-frame-pointer -s -lgmp -lssl -lcrypto
+```
+
+### Installation (release later)
+
 ```bash
 git clone https://github.com/6et3ct1ve/ecco.git
 cd ecco
@@ -38,6 +50,14 @@ sudo make uninstall
 
 ## Usage
 
+### Note
+
+For now it's not done yet, so for actual tests folow this note:
+
+You have output file after compilation, so use './a.out' instead of the command 'ecco'
+
+------
+
 ### Generate key pair
 
 ```bash
@@ -47,13 +67,13 @@ ecco -k [key_size]
 ### Encrypt a file
 
 ```bash
-ecco -e <filename> <public_key>
+ecco -k <public_key> -e <filename> -o <output_file>
 ```
 
 ### Decrypt a file
 
 ```bash
-ecco -d <filename> <private_key>
+ecco -k <private_key> -e <filename> -o <output_file>
 ```
 
 ### Get help
@@ -73,13 +93,15 @@ ecco -k
 ecco -k 384
 
 # Encrypt a file using public key
-ecco -e secret.txt public_key.pem
+ecco -k keyring.pub -e secret.txt -o output.txt
 
 # Decrypt a file using private key
-ecco -d secret.txt.ecco private_key.pem
+ecco -k keyring.priv -d output.txt -o secret.txt
 ```
 
 ## Workflow Example
+
+### Ignore for know
 
 ```bash
 # Step 1: Generate your key pair once
@@ -112,41 +134,51 @@ ecco -d document2.txt.ecco private_key.pem
 ## Project Structure
 
 ```
-ecco/
-├── README.md
+ECCO
+├── include
+│   ├── ecco
+│   │   ├── aes_wrapper.h
+│   │   ├── curves.h
+│   │   ├── ecc_crypto.h
+│   │   ├── ecco.h
+│   │   ├── input_service.h
+│   │   ├── kdf_wrapper.h
+│   │   ├── key_generation.h
+│   │   ├── main.h
+│   │   ├── math_module.h
+│   │   └── output_service.h
+│   └── tinyargs
+│       ├── funcs.c
+│       ├── funcs.h
+│       ├── parser.c
+│       ├── parser.h
+│       ├── README.md
+│       ├── tests
+│       │   └── test
+│       ├── tinyargs.h
+│       └── types.h
 ├── LICENSE
 ├── Makefile
-├── ecco.1
-├── requirements.txt
-├── bin/
-├── include/
-│   └── ecco/
-│       ├── input_service.h
-│       ├── output_service.h
-│       ├── ecc_crypto.h
-│       ├── key_generation.h
-│       ├── curves.h
-│       ├── aes_wrapper.h
-│       ├── kdf_wrapper.h
-│       └── ecco.h
-├── src/
-│   ├── main.c
-│   ├── input_service.c
-│   ├── output_service.c
-│   ├── ecc_crypto.c
-│   ├── key_generation.c
+├── README.md
+├── requirments.txt
+├── src
 │   ├── aes_wrapper.c
-│   └── kdf_wrapper.c
-├── lib/
-│   └── tinyargs/
-│       ├── tinyargs.c
-│       └── tinyargs.h
-├── tests/
-│   ├── test_ecc_crypto.c
-│   ├── test_key_generation.c
-│   └── test_io.c
-└── demo/
-    └── demo_ecco.c
+│   ├── curves.c
+│   ├── ecc_crypto.c
+│   ├── input_service.c
+│   ├── kdf_wrapper.c
+│   ├── key_generation.c
+│   ├── main.c
+│   ├── math_module.c
+│   └── output_service.c
+└── tests
+    ├── test_crypto.c
+    ├── test_curves.c
+    ├── test_ecc_crypto.c
+    ├── test_io.c
+    ├── test_kdf_aes.c
+    ├── test_key_generation.c
+    └── test_math_module.c
 ```
 
 ## Requirements
