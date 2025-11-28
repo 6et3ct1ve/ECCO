@@ -17,7 +17,7 @@ ECCO is a lightweight, secure file encryption utility that leverages the power o
 - **Asymmetric Encryption**: Uses ECC for robust file security
 - **Flexible Key Generation**: Generate key pairs independently with customizable sizes
 - **Key Reusability**: Generate keys once, encrypt multiple files
-- **Flexible Key Sizes**: Support for key lengths from **256 to 521 bits**
+- **Flexible Key Sizes**: Support for key lengths both **256 and 384 bits** (more coming soon)
 - **Cross-Platform**: Compatible with macOS and Linux
 - **Manual Implementation**: Built entirely in C without external cryptographic libraries
 
@@ -25,15 +25,7 @@ ECCO is a lightweight, secure file encryption utility that leverages the power o
 
 ### Note
 
-For now it's not done yet, so for actual tests folow this note:
-
-```bash
-git clone https://github.com/6et3ct1ve/ecco.git
-cd ecco
-gcc src/* include/tinyargs/*.c -O2 -march=x86-64 -fomit-frame-pointer -s -lgmp -lssl -lcrypto
-```
-
-### Installation (release later)
+### Installation 
 
 ```bash
 git clone https://github.com/6et3ct1ve/ecco.git
@@ -42,26 +34,14 @@ make
 sudo make install
 ```
 
-### Uninstall
-
-```bash
-sudo make uninstall
-```
-
 ## Usage
-
-### Note
-
-For now it's not done yet, so for actual tests folow this note:
-
-You have output file after compilation, so use './a.out' instead of the command 'ecco'
 
 ------
 
 ### Generate key pair
 
 ```bash
-ecco -k [key_size]
+ecco -k [key_name] -o [keyring_name]
 ```
 
 ### Encrypt a file
@@ -80,7 +60,6 @@ ecco -k <private_key> -e <filename> -o <output_file>
 
 ```bash
 ecco --help
-man ecco
 ```
 
 ## Examples
@@ -90,7 +69,7 @@ man ecco
 ecco -k
 
 # Generate keys with 384-bit size
-ecco -k 384
+ecco -k P-384
 
 # Encrypt a file using public key
 ecco -k keyring.pub -e secret.txt -o output.txt
@@ -101,20 +80,18 @@ ecco -k keyring.priv -d output.txt -o secret.txt
 
 ## Workflow Example
 
-### Ignore for know
-
 ```bash
 # Step 1: Generate your key pair once
 ecco -k 384
 
 # Step 2: Encrypt multiple files with the same public key
-ecco -e document1.pdf public_key.pem
-ecco -e document2.txt public_key.pem
-ecco -e photo.jpg public_key.pem
+ecco -e document1.pdf public_key.pub
+ecco -e document2.txt public_key.pub
+ecco -e photo.jpg public_key.pub
 
 # Step 3: Decrypt files when needed
-ecco -d document1.pdf.ecco private_key.pem
-ecco -d document2.txt.ecco private_key.pem
+ecco -d document1.ecco private_key.priv
+ecco -d document2.ecco private_key.priv
 ```
 
 ## Key Management

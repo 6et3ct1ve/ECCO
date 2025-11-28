@@ -71,7 +71,6 @@ int handle_encryption(struct arguments* args, struct keyring* keyring, struct cu
         if (!(write_encrypted_msg(dst, encrypted_buff, strlen(encrypted_buff), keyring->curve->name, &keyring->key_pub_eph))) {
             return 0;
         }
-        printf("Encrypted block %ld containing %ld bytes\n", count++, bytes_read);
     }
     fclose(src);
     fclose(dst);

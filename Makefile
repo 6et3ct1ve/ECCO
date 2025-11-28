@@ -8,6 +8,7 @@ LIBS = -lgmp -lssl -lcrypto
 SRCDIR = src
 OBJDIR = obj
 BINDIR = bin
+INSTALLDIR = /usr/bin
 
 SRC = $(wildcard $(SRCDIR)/*.c)
 TINYARGS = $(wildcard include/tinyargs/*.c)
@@ -19,7 +20,15 @@ OBJECTS = $(SRC_O) $(TINYARGS_O)
 
 EXECUTABLE = $(BINDIR)/$(TARGET)
 
-.PHONY: all clean
+.PHONY: all clean install _all
+
+_all: all
+
+install: all
+	cp $(EXECUTABLE) $(INSTALLDIR)
+
+uninstall:
+	rm -f $(INSTALLDIR)/$(TARGET)
 
 all: $(BINDIR) $(OBJDIR) $(EXECUTABLE)
 
