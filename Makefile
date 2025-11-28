@@ -27,7 +27,7 @@ _all: all
 install: all
 	cp $(EXECUTABLE) $(INSTALLDIR)
 
-uninstall:
+uninstall: clean
 	rm -f $(INSTALLDIR)/$(TARGET)
 
 all: $(BINDIR) $(OBJDIR) $(EXECUTABLE)
