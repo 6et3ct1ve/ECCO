@@ -39,8 +39,6 @@ void get_arguments(struct arguments* args, int argc, char** argv) {
         StrArg(""), ARG_STRING, &argTable);
     NewArgument("-o", "output file", 
         StrArg(""), ARG_STRING, &argTable);
-    NewArgument("-h", "print help", 
-        StrArg(""), ARG_STRING, &argTable);
 
     Parse(&argTable);
 
