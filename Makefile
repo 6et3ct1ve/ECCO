@@ -29,11 +29,11 @@ $(EXECUTABLE): $(OBJECTS)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	@mkdir -p $(OBJDIR)
-	$(CC) $(CFLAGS) -v -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJDIR)/%.o: include/tinyargs/%.c
 	@mkdir -p $(OBJDIR)
-	$(CC) $(CFLAGS) -v -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BINDIR): ; @mkdir -p $@
 $(OBJDIR): ; @mkdir -p $@
