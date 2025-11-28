@@ -1,4 +1,5 @@
-#include "../include/ecco/ecco.h"
+#include "math_module.h"
+#include "key_generation.h"
 #include <stdio.h>
 #include <gmp.h>
 #include <time.h>

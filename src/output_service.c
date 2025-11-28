@@ -2,7 +2,7 @@
 #include <string.h>
 
 #include <gmp.h>
-#include "../include/ecco/output_service.h"
+#include "output_service.h"
 
 int write_decrypted_msg(FILE* fp, unsigned char* msg, size_t msg_len){
   if (fwrite(msg, sizeof(char), msg_len, fp) > 0) {

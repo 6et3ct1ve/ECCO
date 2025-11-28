@@ -5,8 +5,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <gmp.h>
-#include "../include/ecco/ecco.h"
-#include "../include/tinyargs/tinyargs.h"
+#include "input_service.h"
+#include "tinyargs.h"
+#include "curves.h"
 
 void test_file_read(char* filename) {
     if (!access(filename, F_OK) && !access(filename, R_OK)) {
