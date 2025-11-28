@@ -1,4 +1,4 @@
-#include "../include/ecco/ecco.h"
+#include "ecco.h"
 #include <gmp.h>
 #include <stddef.h>
 #include <stdlib.h>

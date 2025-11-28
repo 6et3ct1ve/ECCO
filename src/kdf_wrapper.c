@@ -1,4 +1,4 @@
-#include "../include/ecco/kdf_wrapper.h"
+#include "kdf_wrapper.h"
 #include <openssl/evp.h>
 #include <openssl/kdf.h>
 #include <stdlib.h>

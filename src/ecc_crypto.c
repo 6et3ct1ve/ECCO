@@ -1,5 +1,5 @@
 #include <stddef.h>
-#include "../include/ecco/ecco.h"
+#include "aes_wrapper.h"
 
 unsigned char* ecnrypt(unsigned char* buff, size_t buff_len, char* kdf_hash) {
     return (unsigned char*)aes_encrypt_gcm_hex(buff, buff_len, kdf_hash);

@@ -1,4 +1,4 @@
-#include "../include/ecco/aes_wrapper.h"
+#include "aes_wrapper.h"
 #include <openssl/evp.h>
 #include <openssl/rand.h>
 #include <stdio.h>

@@ -5,8 +5,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <gmp.h>
-#include "../include/ecco/ecco.h"
-#include "../include/tinyargs/tinyargs.h"
+#include "ecco.h"
+#include "tinyargs.h"
 
 void test_file_read(char* filename) {
     if (!access(filename, F_OK) && !access(filename, R_OK)) {
@@ -38,6 +38,8 @@ void get_arguments(struct arguments* args, int argc, char** argv) {
     NewArgument("-d", "file to be decrypted", 
         StrArg(""), ARG_STRING, &argTable);
     NewArgument("-o", "output file", 
+        StrArg(""), ARG_STRING, &argTable);
+    NewArgument("-h", "print help", 
         StrArg(""), ARG_STRING, &argTable);
 
     Parse(&argTable);
