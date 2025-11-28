@@ -1,4 +1,4 @@
-#include "ecco.h"
+#include "curves.h"
 #include <gmp.h>
 #include <stddef.h>
 #include <stdlib.h>

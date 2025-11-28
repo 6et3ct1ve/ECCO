@@ -5,24 +5,10 @@
 #include <string.h>
 
 #include <gmp.h>
+#include "curves.h"
 struct base_point {
   char *x;
   char *y;
-};
-
-struct point {
-  mpz_t x;
-  mpz_t y;
-};
-
-struct curve {
-  // all the parameters of a curve
-  char *name;
-  mpz_t multiplicative_a;
-  mpz_t addendum_b;
-  struct point point;
-  mpz_t modulus_p;
-  mpz_t field_size_n;
 };
 
 struct curve_prototype {
@@ -78,8 +64,8 @@ int curve_populate(struct curve *curve_ptr, char *curve_name) {
       _init_mpz_with_str(CURVE_LIST[i].multiplicative_a,
                          &(*curve_ptr).multiplicative_a);
       _init_mpz_with_str(CURVE_LIST[i].addendum_b, &(*curve_ptr).addendum_b);
-      _init_mpz_with_str(CURVE_LIST[i].point.x, &(*curve_ptr).point.x);
-      _init_mpz_with_str(CURVE_LIST[i].point.y, &(*curve_ptr).point.y);
+      _init_mpz_with_str(CURVE_LIST[i].point.x, &(*curve_ptr).base_point_G.x);
+      _init_mpz_with_str(CURVE_LIST[i].point.y, &(*curve_ptr).base_point_G.y);
       _init_mpz_with_str(CURVE_LIST[i].modulus_p, &(*curve_ptr).modulus_p);
       _init_mpz_with_str(CURVE_LIST[i].field_size_n,
                          &(*curve_ptr).field_size_n);
@@ -94,6 +80,6 @@ void curve_print(struct curve *curve_ptr) {
   gmp_printf(
       "name = %s\na = %Zd\nb = %Zd\nGx = %Zd\nGy = %Zd\np = %Zd\nn = %Zd",
       curve_ptr->name, curve_ptr->multiplicative_a, curve_ptr->addendum_b,
-      curve_ptr->point.x, curve_ptr->point.y, curve_ptr->modulus_p,
+      curve_ptr->base_point_G.x, curve_ptr->base_point_G.y, curve_ptr->modulus_p,
       curve_ptr->field_size_n);
 }
